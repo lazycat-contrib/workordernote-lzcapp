@@ -1,0 +1,18 @@
+package: community.lazycat.app.workordernote
+version: 0.43.8
+name: WorkOrderNote
+description: Self-hosted work and life assistant with todos, schedule reminders, timetables and AI helper
+min_os_version: "1.5.0"
+homepage: https://github.com/magicindex/workordernote
+author: magicindex
+license: MIT
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: 打工记
+    description: 打工人的待办提醒助手：任务/记事/清单/课程表/账单/纪念日，支持农历重复与多渠道提醒
+  en:
+    name: WorkOrderNote
+    description: Self-hosted work and life assistant with todos, schedule reminders, timetables and AI helper

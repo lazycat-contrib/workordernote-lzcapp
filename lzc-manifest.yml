@@ -1,0 +1,81 @@
+application:
+  subdomain: workordernote
+  multi_instance: false
+  public_path:
+    - /
+  upstreams:
+    - location: /
+      backend: http://workordernote:8906/
+  injects:
+    # 三阶段免密登录：首次注册管理员时捕获凭据，之后自动填充
+    - id: capture-credentials
+      on: request
+      auth_required: false
+      when:
+        - /api/register
+        - /api/login
+        - /api/auth
+        - /api/user
+      do: |
+        const payload = ctx.body.getJSON();
+        const user = payload && (payload.username || payload.user || payload.account);
+        if (user && payload.password) {
+          ctx.flow.set("pending_user", String(user));
+          ctx.flow.set("pending_pass", String(payload.password));
+        }
+    - id: persist-credentials
+      on: response
+      auth_required: false
+      when:
+        - /api/register
+        - /api/login
+        - /api/auth
+        - /api/user
+      do: |
+        if (ctx.status >= 200 && ctx.status < 300) {
+          const user = ctx.flow.get("pending_user");
+          const pass = ctx.flow.get("pending_pass");
+          if (user && pass) {
+            ctx.persist.set("saved_user", user);
+            ctx.persist.set("saved_pass", pass);
+          }
+        }
+    - id: autofill-login
+      when:
+        - /
+      do:
+        - src: builtin://simple-inject-password
+          params:
+            user:
+              $persist: saved_user
+            password:
+              $persist: saved_pass
+    - id: open-save-chooser
+      on: browser
+      when:
+        - /*
+      do:
+        - src: file:///lzcapp/pkg/content/lazycat-injects/lzc-file-chooser-inject.js
+
+services:
+  workordernote:
+    # upstream: ghcr.io/magicindex/workordernote:0.43.8
+    image: ghcr.1ms.run/magicindex/workordernote:0.43.8
+    environment:
+      - ENV=release
+      - DATA_DIR=/app/data
+      - TZ=Asia/Shanghai
+    command: -data-dir /app/data -web-dir ./static/dist -log-console
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:8906/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    binds:
+      - /lzcapp/var/data:/app/data
+
+usage: |
+  打工记（WorkOrderNote）是打工人的自托管助手：待办、计划、清单、课程表、纪念日、账单，支持农历重复规则与多渠道到点提醒。
+  首次打开注册第一个账号即管理员（免密登录会记住首次凭据）。
+  AI 小秘可在设置里接 Ollama 或任意 OpenAI 兼容接口。
