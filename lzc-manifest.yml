@@ -56,11 +56,10 @@ application:
         - /*
       do:
         - src: file:///lzcapp/pkg/content/lazycat-injects/lzc-file-chooser-inject.js
-
 services:
   workordernote:
-    # upstream: ghcr.io/magicindex/workordernote:0.43.8
-    image: ghcr.1ms.run/magicindex/workordernote:0.43.8
+    # upstream: ghcr.io/magicindex/workordernote:0.44.1
+    image: ghcr.1ms.run/magicindex/workordernote:0.44.1
     environment:
       - ENV=release
       - DATA_DIR=/app/data
@@ -74,7 +73,6 @@ services:
       start_period: 30s
     binds:
       - /lzcapp/var/data:/app/data
-
 usage: |
   打工记（WorkOrderNote）是打工人的自托管助手：待办、计划、清单、课程表、纪念日、账单，支持农历重复规则与多渠道到点提醒。
   首次打开注册第一个账号即管理员（免密登录会记住首次凭据）。

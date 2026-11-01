@@ -1,5 +1,5 @@
 package: community.lazycat.app.workordernote
-version: 0.43.8
+version: 0.44.1
 name: WorkOrderNote
 description: Self-hosted work and life assistant with todos, schedule reminders, timetables and AI helper
 min_os_version: "1.5.0"
