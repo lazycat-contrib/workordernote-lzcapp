@@ -58,8 +58,8 @@ application:
         - src: file:///lzcapp/pkg/content/lazycat-injects/lzc-file-chooser-inject.js
 services:
   workordernote:
-    # upstream: ghcr.io/magicindex/workordernote:0.48.2
-    image: ghcr.1ms.run/magicindex/workordernote:0.48.2
+    # upstream: ghcr.io/magicindex/workordernote:0.48.4
+    image: ghcr.1ms.run/magicindex/workordernote:0.48.4
     environment:
       - ENV=release
       - DATA_DIR=/app/data
